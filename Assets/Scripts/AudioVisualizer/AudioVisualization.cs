@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -6,8 +7,8 @@ using UnityEngine;
 public class AudioVisualization : MonoBehaviour
 {
 
-    [SerializeField] private AudioCueSO audioCueSO;
-    [SerializeField] private AudioConfigurationSO configurationSO;
+    [SerializeField] private MainAudioCueSO _audioCueSO;
+    [SerializeField] private AudioConfigurationSO _configurationSO;
 
     private AudioCueKey _audioCueKey;
     private AudioSource[] _audioSources;
@@ -15,10 +16,12 @@ public class AudioVisualization : MonoBehaviour
     private float[] sampleData = new float[64];   
     public float[] normalizedData = new float[64];
 
+    private Coroutine _dataAcquisitionCoroutine;
+
     private void Start()
     {
-        Initialize(audioCueSO,configurationSO);
-        StartCoroutine(DataAcquisitionCoroutine());
+        Initialize(_audioCueSO,_configurationSO);
+        //StartCoroutine(DataAcquisitionCoroutine());
     }
 
     public void Initialize(AudioCueSO audioCue,AudioConfigurationSO settings)
@@ -30,7 +33,42 @@ public class AudioVisualization : MonoBehaviour
 
     public void ToggleOn(bool on)
     {
+        if(!on)
+        {
+            if (_dataAcquisitionCoroutine != null)
+            {
+                StopCoroutine(_dataAcquisitionCoroutine);
+                _dataAcquisitionCoroutine = null;
+            }
+        }  
+        else
+            _dataAcquisitionCoroutine = StartCoroutine(DataAcquisitionCoroutine());
+    }
 
+    public void StopMusic()
+    {
+        //音乐渐入
+        AudioManager.Instance.StopAudioCue(_audioCueKey);
+        for(int i=0;i<_audioSources.Length;i++)
+        {
+            _audioSources[i]=null;
+        }
+    }
+
+    public void MusicFadeOut(AudioClip clip)
+    {
+        _audioCueSO.SetMainAudio(clip);
+
+        AudioManager.Instance.PlayAudioCue(_audioCueSO, _configurationSO, transform);
+        _audioSources = GetComponentsInChildren<AudioSource>();
+
+        for(int i=0;i<_audioSources.Length; i++)
+        {
+            _audioSources[i].DOFade(1, 3).OnComplete(() =>
+            {
+                Debug.Log("Debug FadeOut");
+            });
+        }
     }
 
     //数据获取协程

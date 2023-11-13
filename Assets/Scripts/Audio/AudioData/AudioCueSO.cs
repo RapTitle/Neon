@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
 
+//需要MainAudio的添加有什么功能呢，简单一点，可以添加，可以全部删除，可以单个删除
 
 [CreateAssetMenu(menuName ="Audio/AudioCue")]
 public class AudioCueSO : ScriptableObject
 {
     public bool looping=false;
 
-    [SerializeField] private AudioClipsGroup[] audioClipsGroups = default;
+    [SerializeField] protected AudioClipsGroup[] audioClipsGroups = default;
 
     public AudioClip[] GetClips()
     {
@@ -21,9 +22,6 @@ public class AudioCueSO : ScriptableObject
 
         return resultingClips;
     }
-
-
-    
 }
 
 
