@@ -55,8 +55,11 @@ public class PlatformCreator : MonoBehaviour
             Platform platform = _platformPool.Request();
             //
             // Todo (位置需要进行处理，应该可以根据声音可视化的数据对位置进行规整)
-
             platform.transform.localPosition=Vector3.zero;
+
+
+
+
             platform.Initiazlie(Color.blue, 5);
             yield return _createWait;
         }

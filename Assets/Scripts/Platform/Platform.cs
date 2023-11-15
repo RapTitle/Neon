@@ -24,8 +24,4 @@ public class Platform : MonoBehaviour
     {
         PlatformCreator.PlatformPool.Return(this);
     }
-
-
-
-
 }
